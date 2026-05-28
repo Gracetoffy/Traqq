@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -190,8 +191,9 @@ padding:24px 16px;display:flex;flex-direction:column;gap:4px;
 
 /* ── TYPOGRAPHY ── */
 .pg-label{font-size:12px;font-weight:500;color:var(--muted);letter-spacing:0.4px;text-transform:uppercase;margin-bottom:2px}
-.pg-title{font-family:var(--font-display);font-size:26px;font-weight:600;letter-spacing:-0.5px;line-height:1.15}
+.pg-title{font-family:var(--font-display);font-size:20px;font-weight:600;letter-spacing:-0.5px;line-height:1.15}
 .section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.section-head--tight{margin-bottom:6px}
 .section-title{font-size:14px;font-weight:600;letter-spacing:-0.2px}
 .section-action{font-size:13px;color:var(--accent);cursor:pointer;font-weight:500}
 
@@ -210,6 +212,29 @@ position:relative;overflow:hidden;
 .hero-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .hero-stat-label{font-size:10px;opacity:0.65;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px}
 .hero-stat-val{font-size:15px;font-weight:600}
+.hero-amount-wrap{
+  position:relative;
+  min-height:48px;
+  margin-bottom:6px;
+}
+.hero-amount{
+  position:absolute;
+  inset:0;
+  width:100%;
+  opacity:0;
+  transition:opacity 0.5s ease;
+  cursor:pointer;
+}
+.hero-amount--visible{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+}
+.hero-amount--hidden{
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+}
 
 /* ── METRIC GRID ── */
 .metric-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
@@ -227,21 +252,6 @@ cursor:pointer;transition:all var(--transition);
 .metric-fill{height:100%;border-radius:2px;background:var(--accent);transition:width 1s cubic-bezier(0.4,0,0.2,1)}
 .metric-fill.g{background:var(--green)}
 
-/* ── HEATMAP ── */
-.heatmap-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:16px}
-.heatmap-grid{display:grid;grid-template-columns:28px repeat(7,1fr);gap:3px;margin-top:10px}
-.hm-label{font-size:10px;color:var(--muted);display:flex;align-items:center;justify-content:flex-end;padding-right:4px}
-.hm-day{font-size:10px;color:var(--muted);text-align:center;padding-bottom:3px}
-.hm-cell{aspect-ratio:1;border-radius:3px;background:var(--surface2);cursor:pointer;transition:all 0.2s}
-.hm-cell:hover{transform:scale(1.25);z-index:2;position:relative}
-.hm-cell.h1{background:rgba(196,82,42,0.18)}
-.hm-cell.h2{background:rgba(196,82,42,0.38)}
-.hm-cell.h3{background:rgba(196,82,42,0.62)}
-.hm-cell.h4{background:rgba(196,82,42,0.88)}
-.hm-legend{display:flex;align-items:center;gap:8px;margin-top:12px}
-.hm-legend-label{font-size:11px;color:var(--muted)}
-.hm-legend-cells{display:flex;gap:3px}
-.hm-legend-cell{width:12px;height:12px;border-radius:2px}
 
 /* ── TRANSACTIONS ── */
 .tx-list{display:flex;flex-direction:column;gap:6px}
@@ -309,9 +319,10 @@ border-radius:var(--radius-sm);
 background:var(--accent);color:white;
 font-size:15px;font-weight:600;
 display:flex;align-items:center;justify-content:center;gap:8px;
+box-shadow:0 18px 40px rgba(196,82,42,0.18);
 transition:all var(--transition);letter-spacing:-0.2px;
 }
-.cta:hover{opacity:0.9;transform:translateY(-1px)}
+.cta:hover{opacity:0.94;transform:translateY(-1px);box-shadow:0 22px 50px rgba(196,82,42,0.24)}
 .cta:active{transform:scale(0.98)}
 .cta:disabled{opacity:0.6;cursor:not-allowed;transform:none}
 .cta.secondary{background:var(--surface2);color:var(--text);border:0.5px solid var(--border)}
@@ -381,6 +392,75 @@ font-size:13px;font-weight:500;
 .insight-val.accent{color:var(--accent)}
 .insight-val.green{color:var(--green)}
 
+/* ── bar chart ── */
+.platform-stats {
+  background: var(--surface);
+  border-radius:13px;
+  border: 0.5px solid var(--border);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.platform-bar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.platform-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 90px;
+  flex-shrink: 0;
+}
+
+.platform-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #C4522A;
+  flex-shrink: 0;
+}
+
+.platform-dot.whatsapp { background: #F08B5C; }
+.platform-dot.telegram { background: #A1452E; }
+
+.platform-name {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.platform-bar-track {
+  flex: 1;
+  height: 6px;
+  background: var(--surface-2);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.platform-bar-fill {
+  height: 100%;
+  opacity: 0.5;
+  background: #C4522A;
+  border-radius: 99px;
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.platform-bar-fill.whatsapp { background: #F08B5C; }
+.platform-bar-fill.telegram { background: #A1452E; }
+
+.platform-percent {
+  font-size: 13px;
+  font-family: 'DM Mono', monospace;
+  color: var(--text);
+  width: 32px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
 /* ── TRANSACTIONS PAGE ── */
 .search-row{display:flex;align-items:center;gap:8px;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-xs);padding:10px 13px}
 .search-row i{color:var(--muted);font-size:18px;flex-shrink:0}
@@ -401,9 +481,28 @@ font-size:13px;font-weight:500;
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
 /* ── EMPTY STATE ── */
-.empty{text-align:center;padding:40px 24px;color:var(--muted)}
-.empty i{font-size:44px;opacity:0.3;display:block;margin-bottom:12px}
-.empty p{font-size:14px;line-height:1.6}
+.empty-state-title{font-size:25px;font-weight:600;margin-bottom:8px; width:100%; opacity: 0.7;}
+.empty-state p{font-size:14px;line-height:1.6}
+.empty-state button{ border:0.5px solid rgb(208, 199, 199);margin-top:16px}
+.rev {display: none; font-size: 12px; }
+.revalt{display: none;}
+.empty-state { display: none; padding: 15; }       /* hidden by default */
+.show { display: block; }  /* visible when .show is added */
+
+
+.glowing-text{
+  margin-top:10px;
+  max-width:680px;
+  padding:14px 16px;
+  border-radius:14px;
+  background:rgba(196,82,42,0.08);
+  border:1px solid rgba(196,82,42,0.22);
+  color:var(--accent);
+  font-size:13px;
+  line-height:1.6;
+  font-weight:500;
+}
+
 
 /* ── TOAST ── */
 #toast{
@@ -440,6 +539,54 @@ z-index:999;white-space:nowrap;
 .hero-stat-val{font-size:14px}
 #toast{bottom:70px}
 }
+
+/* Share Modal */
+.share-modal-overlay{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,0.5);display:none;z-index:999;
+}
+.share-modal-overlay.active{display:block}
+.share-modal{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--surface);border-radius:var(--radius) var(--radius) 0 0;
+  padding:24px 16px;display:none;z-index:1000;
+  max-height:80vh;overflow-y:auto;
+  animation:slideUp 0.3s ease-out;
+}
+.share-modal.active{display:block}
+@keyframes slideUp{
+  from{transform:translateY(100%);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+.share-modal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:20px;
+}
+#share-modal-title{
+  font-size:18px;font-weight:600;color:var(--text);
+}
+.share-modal-close{
+  background:none;border:none;cursor:pointer;
+  color:var(--muted);font-size:20px;padding:4px;
+  display:flex;align-items:center;justify-content:center;
+}
+.share-modal-content{
+  display:flex;flex-direction:column;gap:12px;
+}
+.share-option{
+  display:flex;align-items:center;gap:16px;
+  padding:16px;border:0.5px solid var(--border);
+  border-radius:var(--radius-sm);background:var(--surface);
+  cursor:pointer;transition:all var(--transition);
+  font-size:15px;font-weight:500;color:var(--text);
+}
+.share-option:hover{
+  background:var(--surface2);border-color:var(--border-md);
+}
+.share-option i{
+  font-size:20px;color:var(--muted);flex-shrink:0;
+}
+
 </style>
 </head>
 <body>
@@ -464,31 +611,54 @@ z-index:999;white-space:nowrap;
   <div id="main">
     <!-- TOP BAR (mobile) -->
     <header id="topbar">
-      <div class="topbar-logo">TRAQQ.</div>
+      <div class="topbar-logo" href="onboarding.html">TRAQQ.</div>
       <div class="topbar-actions">
         <button class="icon-btn" onclick="toggleTheme()" aria-label="Toggle theme"><i class="ti ti-moon" id="theme-icon-m"></i></button>
         <button class="icon-btn" onclick="openDrawer()" aria-label="Open menu"><i class="ti ti-menu-2"></i></button>
       </div>
     </header>
+   
 
     <div id="scroll">
       <!-- HOME -->
       <main class="page active" id="page-home">
         <h2 class="sr-only">Dashboard overview</h2>
         <div>
-          <div class="pg-label">Good evening, Amaka</div>
-          <div class="pg-title">Your revenue this month</div>
+          <div class="pg-label">Hello, Amaka <span style="font-size: 22px">👋</span></div>
+          <div class="pg-title rev" id = "rev">Your revenue this month</div>
+          <div class="pg-title revalt" id="revalt">Welcome to Traqq</div>
+        </div>
+         <!-- Empty State -->
+        <div class="empty-state hero-card" id="emptyState">
+          <div class="empty-state-title">No Sales yet</div>
+          <p class="empty-state-desc">Generate your first payment link and share it on Instagram, WhatsApp or Telegram to start tracking.</p>
+          <button class="cta" style="width:auto; border:1px solid whitesmoke; padding:12px 24px;margin-top:4px" onclick="goPage('link')"><i class="ti ti-link" aria-hidden="true"></i>Generate your first link</button>
         </div>
 
         <!-- HERO -->
-        <div class="hero-card" role="region" aria-label="Total revenue">
+        <div class="hero-card" role="region" id="dashboardContent" aria-label="Total revenue">
           <div class="hero-eyebrow">Total revenue — May 2025</div>
-          <div class="hero-amount"><sup>₦</sup>380,000</div>
+          <div class="hero-amount-wrap">
+            <div class="hero-amount hero-amount--visible" id="amount-showing"><sup>₦</sup>380,000 👁</div>
+            <div class="hero-amount hero-amount--hidden" id="amount-hide">...... <i class="fa-thin fa-eye-closed"></i></div>
+          </div>
           <div class="hero-badge"><i class="ti ti-trending-up" aria-hidden="true" style="font-size:13px"></i> +22% from April</div>
           <div class="hero-row">
             <div><div class="hero-stat-label">Transactions</div><div class="hero-stat-val">98</div></div>
             <div><div class="hero-stat-label">Avg. order</div><div class="hero-stat-val">₦3,878</div></div>
             <div><div class="hero-stat-label">Best day</div><div class="hero-stat-val">Tuesday</div></div>
+          </div>
+        </div>
+
+        <!--GET YOUR LINK-->
+         <div class="link-result" style="display:block" id="link-result">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="font-size:13px;font-weight:600">Your Kora Link</div>
+          </div>
+          <div class="link-url" id="link-url">traqq.link/amaka/ig/abc123</div>
+          <div class="link-actions">
+            <button class="link-btn" onclick="copyLink()"><i class="ti ti-copy" aria-hidden="true"></i>Copy link</button>
+            <button class="link-btn" onclick="openShareModal()"><i class="ti ti-share" aria-hidden="true"></i>Share</button>
           </div>
         </div>
 
@@ -524,26 +694,42 @@ z-index:999;white-space:nowrap;
             </div>
           </div>
         </div>
+          <div class="section-head section-head--tight"><div class="section-title">Top platforms this week</div></div>
+          <div class="platform-stats">
+  <div class="platform-bar-item">
+    <div class="platform-bar-left">
+      <span class="platform-dot instagram"></span>
+      <span class="platform-name">Instagram</span>
+    </div>
+    <div class="platform-bar-track">
+      <div class="platform-bar-fill" style="width: 72%"></div>
+    </div>
+    <span class="platform-percent">72%</span>
+  </div>
 
-        <!-- HEATMAP -->
-        <div class="heatmap-card" role="region" aria-label="Peak sales windows">
-          <div class="section-head" style="margin-bottom:4px">
-            <div class="section-title">Peak sales window</div>
-            <div style="font-size:12px;color:var(--muted)">Last 30 days</div>
-          </div>
-          <div style="font-size:12px;color:var(--muted);margin-bottom:2px">Tue & Fri evenings drive 61% of revenue</div>
-          <div class="heatmap-grid" id="heatmap" role="grid" aria-label="Sales heatmap by day and hour"></div>
-          <div class="hm-legend">
-            <div class="hm-legend-label">Low</div>
-            <div class="hm-legend-cells">
-              <div class="hm-legend-cell" style="background:var(--surface2)"></div>
-              <div class="hm-legend-cell" style="background:rgba(196,82,42,0.18)"></div>
-              <div class="hm-legend-cell" style="background:rgba(196,82,42,0.5)"></div>
-              <div class="hm-legend-cell" style="background:rgba(196,82,42,0.88)"></div>
-            </div>
-            <div class="hm-legend-label">High</div>
-          </div>
-        </div>
+  <div class="platform-bar-item">
+    <div class="platform-bar-left">
+      <span class="platform-dot whatsapp"></span>
+      <span class="platform-name">WhatsApp</span>
+    </div>
+    <div class="platform-bar-track">
+      <div class="platform-bar-fill whatsapp" style="width: 20%"></div>
+    </div>
+    <span class="platform-percent">20%</span>
+  </div>
+
+  <div class="platform-bar-item">
+    <div class="platform-bar-left">
+      <span class="platform-dot telegram"></span>
+      <span class="platform-name">Telegram</span>
+    </div>
+    <div class="platform-bar-track">
+      <div class="platform-bar-fill telegram" style="width: 8%"></div>
+    </div>
+    <span class="platform-percent">8%</span>
+  </div>
+</div>          
+    
 
         <!-- RECENT TX -->
         <div>
@@ -584,16 +770,9 @@ z-index:999;white-space:nowrap;
         <div>
           <div class="pg-label">Get paid, get data</div>
           <div class="pg-title">Generate a link</div>
+          <p class="glowing-text">One link works everywhere. TRAQQ automatically detects if it was opened from Instagram, WhatsApp, Telegram or any browser.</p>
         </div>
-        <div class="form-field">
-          <div class="form-label">Which platform is this for?</div>
-          <div class="platform-grid">
-            <button class="plat-btn" onclick="selPlat(this,'instagram')" aria-pressed="false"><i class="ti ti-brand-instagram" style="color:var(--accent)" aria-hidden="true"></i>Instagram</button>
-            <button class="plat-btn" onclick="selPlat(this,'telegram')" aria-pressed="false"><i class="ti ti-brand-telegram" style="color:var(--green)" aria-hidden="true"></i>Telegram</button>
-            <button class="plat-btn" onclick="selPlat(this,'whatsapp')" aria-pressed="false"><i class="ti ti-brand-whatsapp" style="color:var(--green)" aria-hidden="true"></i>WhatsApp</button>
-            <button class="plat-btn" onclick="selPlat(this,'tiktok')" aria-pressed="false"><i class="ti ti-brand-tiktok" aria-hidden="true"></i>TikTok</button>
-          </div>
-        </div>
+        
         <div class="form-field">
           <label class="form-label" for="item-label">Item label <span class="form-hint" style="display:inline">(optional)</span></label>
           <input type="text" id="item-label" class="text-input" placeholder="e.g. Y2K denim set" />
@@ -611,7 +790,7 @@ z-index:999;white-space:nowrap;
           <div class="link-url" id="link-url">traqq.link/amaka/ig/abc123</div>
           <div class="link-actions">
             <button class="link-btn" onclick="copyLink()"><i class="ti ti-copy" aria-hidden="true"></i>Copy link</button>
-            <button class="link-btn"><i class="ti ti-share" aria-hidden="true"></i>Share</button>
+            <button class="link-btn" onclick="openShareModal()"><i class="ti ti-share" aria-hidden="true"></i>Share</button>
           </div>
           <div style="padding:11px 12px;background:var(--green-light);border-radius:var(--radius-xs);font-size:13px;color:var(--green);display:flex;align-items:center;gap:8px">
             <i class="ti ti-check" aria-hidden="true"></i>
@@ -759,13 +938,84 @@ z-index:999;white-space:nowrap;
 
 <div id="toast" role="status" aria-live="polite"></div>
 
+<!-- Share Modal -->
+<div id="share-modal-overlay" class="share-modal-overlay" onclick="closeShareModal()"></div>
+<div id="share-modal" class="share-modal" role="dialog" aria-labelledby="share-modal-title">
+  <div class="share-modal-header">
+    <h2 id="share-modal-title">Share link</h2>
+    <button class="share-modal-close" onclick="closeShareModal()" aria-label="Close share menu"><i class="ti ti-x"></i></button>
+  </div>
+  <div class="share-modal-content">
+    <button class="share-option" onclick="shareVia('whatsapp')">
+      <i class="ti ti-brand-whatsapp"></i>
+      <span>WhatsApp</span>
+    </button>
+    <button class="share-option" onclick="shareVia('telegram')">
+      <i class="ti ti-brand-telegram"></i>
+      <span>Telegram</span>
+    </button>
+    <button class="share-option" onclick="shareVia('instagram')">
+      <i class="ti ti-brand-instagram"></i>
+      <span>Instagram</span>
+    </button>
+    <button class="share-option" onclick="shareVia('email')">
+      <i class="ti ti-mail"></i>
+      <span>Email</span>
+    </button>
+    <button class="share-option" onclick="shareVia('copy')">
+      <i class="ti ti-copy"></i>
+      <span>Copy link</span>
+    </button>
+  </div>
+</div>
 <script>
+
+  //-DASHBOARD STATE
+const hasTransactions = true; // toggle this to false to see empty state
+
+function checkDashboardState() {
+  if (hasTransactions==true) {
+    // hide empty state, show dashboard
+    document.getElementById('emptyState').classList.remove('show');
+    document.getElementById('dashboardContent').style.display = 'block';
+    document.getElementById('rev').classList.add('show')
+    document.getElementById('revalt').classList.remove('show')
+
+  } else {
+    // show empty state, hide dashboard
+    document.getElementById('emptyState').classList.add('show');
+    document.getElementById('dashboardContent').style.display = 'none';
+    document.getElementById('rev').classList.remove('show')
+    document.getElementById('revalt').classList.add('show')
+
+
+  }
+}
+checkDashboardState();
+//show amount
+const amt = document.getElementById('amount-showing');
+const amtHide = document.getElementById('amount-hide');
+amt.addEventListener('click', () => {
+  amt.classList.remove('hero-amount--visible');
+  amt.classList.add('hero-amount--hidden');
+  amtHide.classList.remove('hero-amount--hidden');
+  amtHide.classList.add('hero-amount--visible');
+});
+amtHide.addEventListener('click', () => {
+  amtHide.classList.remove('hero-amount--visible');
+  amtHide.classList.add('hero-amount--hidden');
+  amt.classList.remove('hero-amount--hidden');
+  amt.classList.add('hero-amount--visible');
+});
+
+
 // ── HEATMAP ──
 const days=['M','T','W','T','F','S','S'];
 const hours=['6AM','9AM','12PM','3PM','6PM','9PM'];
 const heat=[[0,0,1,0,1,2,1],[0,0,0,0,1,1,0],[1,0,0,1,2,2,1],[0,1,0,0,1,3,2],[1,0,1,0,2,4,3],[0,0,0,1,1,2,1]];
 function buildHeatmap(){
   const el=document.getElementById('heatmap');
+  if(!el) return;
   el.innerHTML='';
   el.appendChild(Object.assign(document.createElement('div'),{className:'hm-label'}));
   days.forEach(d=>{const l=document.createElement('div');l.className='hm-day';l.textContent=d;el.appendChild(l)});
@@ -837,10 +1087,49 @@ function genLink(){
   document.getElementById('link-result').classList.add('show');
   showToast('Link generated');
 }
+
 function copyLink(){
   const t=document.getElementById('link-url').textContent;
   navigator.clipboard?.writeText(t).catch(()=>{});
   showToast('Copied to clipboard');
+}
+
+function openShareModal(){
+  const overlay=document.getElementById('share-modal-overlay');
+  const modal=document.getElementById('share-modal');
+  overlay.classList.add('active');
+  modal.classList.add('active');
+}
+
+function closeShareModal(){
+  const overlay=document.getElementById('share-modal-overlay');
+  const modal=document.getElementById('share-modal');
+  overlay.classList.remove('active');
+  modal.classList.remove('active');
+}
+
+function shareVia(platform){
+  const link=document.getElementById('link-url').textContent;
+  const text=`Check out my link: ${link}`;
+  
+  const shareUrls={
+    whatsapp:`https://wa.me/?text=${encodeURIComponent(text)}`,
+    telegram:`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent('Check out my link')}`,
+    instagram:`https://www.instagram.com/`,
+    email:`mailto:?subject=Check this out&body=${encodeURIComponent(text)}`,
+    copy:null
+  };
+  
+  if(platform==='copy'){
+    navigator.clipboard?.writeText(link).catch(()=>{});
+    showToast('Copied to clipboard');
+  } else if(platform==='instagram'){
+    showToast('Copy the link and share via Instagram');
+  } else if(shareUrls[platform]){
+    window.open(shareUrls[platform],'_blank');
+  }
+  
+  closeShareModal();
 }
 
 // ── ADVISOR — STREAMING SIMULATION ──
@@ -905,6 +1194,7 @@ function showToast(msg){
   t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2200);
 }
+
 
 // keyboard nav on tx rows
 document.querySelectorAll('.tx-row').forEach(r=>{
