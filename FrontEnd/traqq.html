@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TRAQQ — Revenue Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#F5F2EE;
+--surface:#FFFFFF;
+--surface2:#EDE9E3;
+--surface3:#E5E0D8;
+--border:rgba(30,20,10,0.09);
+--border-md:rgba(30,20,10,0.14);
+--text:#18140F;
+--muted:#7A7268;
+--subtle:#B0AA9F;
+--accent:#C4522A;
+--accent-light:#FAF0EB;
+--accent-border:rgba(196,82,42,0.25);
+--green:#1E6E44;
+--green-light:#EBF5F0;
+--amber:#996010;
+--amber-light:#FDF4E3;
+--red:#992828;
+--red-light:#FDF0F0;
+--radius:16px;
+--radius-sm:10px;
+--radius-xs:6px;
+--font-display:'Bricolage Grotesque',sans-serif;
+--font-body:'DM Sans',sans-serif;
+--font-mono:'DM Mono',monospace;
+--nav-h:62px;
+--top-h:58px;
+--sidebar-w:240px;
+--transition:0.22s cubic-bezier(0.4,0,0.2,1);
+}
+[data-theme=dark]{
+--bg:#0F0D0B;
+--surface:#1A1714;
+--surface2:#242018;
+--surface3:#2E2920;
+--border:rgba(255,240,220,0.08);
+--border-md:rgba(255,240,220,0.13);
+--text:#F2EDE6;
+--muted:#8A8278;
+--subtle:#5A5650;
+--accent:#D9693D;
+--accent-light:#2A1810;
+--accent-border:rgba(217,105,61,0.22);
+--green:#3DAD72;
+--green-light:#0D2018;
+--amber:#D4963A;
+--amber-light:#201408;
+--red:#D45252;
+--red-light:#1E0C0C;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{cursor:pointer;font-family:inherit;border:none;background:none;color:inherit}
+input,textarea{font-family:inherit;color:var(--text)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+
+/* ── LAYOUT ── */
+#app{display:flex;height:100%;overflow:hidden}
+
+/* Sidebar */
+#sidebar{
+width:var(--sidebar-w);flex-shrink:0;
+background:var(--surface);
+border-right:0.5px solid var(--border);
+display:flex;flex-direction:column;
+padding:24px 16px;gap:4px;
+transition:transform var(--transition);
+}
+.sidebar-logo{
+font-family:var(--font-display);font-size:20px;font-weight:600;
+color:var(--accent);letter-spacing:-0.5px;
+padding:4px 10px 20px;
+}
+.sidebar-logo em{color:var(--muted);font-style:normal;font-size:13px;font-family:var(--font-mono);display:block;margin-top:1px}
+.sidebar-item{
+display:flex;align-items:center;gap:10px;
+padding:10px 12px;border-radius:var(--radius-sm);
+font-size:14px;font-weight:500;color:var(--muted);
+transition:all var(--transition);width:100%;text-align:left;
+}
+.sidebar-item i{font-size:18px;flex-shrink:0}
+.sidebar-item:hover{background:var(--surface2);color:var(--text)}
+.sidebar-item.active{background:var(--accent-light);color:var(--accent)}
+.sidebar-bottom{margin-top:auto;padding-top:16px;border-top:0.5px solid var(--border);display:flex;flex-direction:column;gap:4px}
+.sidebar-profile{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-sm)}
+.sidebar-avatar{width:32px;height:32px;border-radius:50%;background:var(--accent-light);color:var(--accent);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sidebar-name{font-size:13px;font-weight:500}
+.sidebar-sub{font-size:11px;color:var(--muted)}
+
+/* Main area */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+/* Top bar (mobile) */
+#topbar{
+display:none;
+height:var(--top-h);
+background:var(--surface);
+border-bottom:0.5px solid var(--border);
+padding:0 18px;
+align-items:center;justify-content:space-between;
+flex-shrink:0;position:sticky;top:0;z-index:50;
+}
+.topbar-logo{font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--accent);letter-spacing:-0.5px}
+.topbar-actions{display:flex;align-items:center;gap:8px}
+.icon-btn{
+width:36px;height:36px;border-radius:var(--radius-xs);
+display:flex;align-items:center;justify-content:center;
+font-size:18px;color:var(--muted);
+border:0.5px solid var(--border);
+transition:all var(--transition);
+}
+.icon-btn:hover{background:var(--surface2);color:var(--text)}
+
+/* Scroll area */
+#scroll{flex:1;overflow-y:auto;overflow-x:hidden;scroll-behavior:smooth}
+#scroll::-webkit-scrollbar{width:4px}
+#scroll::-webkit-scrollbar-thumb{background:var(--border-md);border-radius:2px}
+
+/* Pages */
+.page{display:none;padding:28px;max-width:900px;margin:0 auto;flex-direction:column;gap:24px;animation:fadeIn 0.25s ease}
+.page.active{display:flex}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* Bottom nav (mobile) */
+#bottomnav{
+display:none;
+height:var(--nav-h);
+background:var(--surface);
+border-top:0.5px solid var(--border);
+flex-shrink:0;
+}
+.bnav-inner{display:flex;height:100%;padding:0 4px}
+.bnav-item{
+flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+font-size:10px;font-weight:500;color:var(--muted);
+border:none;background:none;cursor:pointer;
+transition:all var(--transition);padding:6px 0;
+}
+.bnav-item i{font-size:20px;transition:transform var(--transition)}
+.bnav-item.active{color:var(--accent)}
+.bnav-item.active i{transform:translateY(-2px)}
+.bnav-fab{
+flex:0 0 64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+font-size:10px;color:var(--muted);border:none;background:none;cursor:pointer;
+}
+.bnav-fab-ring{
+width:48px;height:48px;border-radius:50%;
+background:var(--accent);color:white;
+display:flex;align-items:center;justify-content:center;
+font-size:22px;margin-top:-18px;
+border:3px solid var(--bg);
+transition:all var(--transition);
+}
+.bnav-fab:hover .bnav-fab-ring{transform:scale(1.07) translateY(-2px)}
+
+/* Drawer overlay */
+#drawer-overlay{
+position:fixed;inset:0;background:rgba(0,0,0,0.45);
+z-index:200;opacity:0;pointer-events:none;
+transition:opacity var(--transition);
+}
+#drawer-overlay.open{opacity:1;pointer-events:all}
+#drawer{
+position:fixed;top:0;left:0;width:260px;height:100%;
+background:var(--surface);z-index:201;
+transform:translateX(-100%);
+transition:transform 0.32s cubic-bezier(0.4,0,0.2,1);
+padding:24px 16px;display:flex;flex-direction:column;gap:4px;
+}
+#drawer.open{transform:translateX(0)}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.drawer-logo{font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--accent)}
+.drawer-close{width:32px;height:32px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--muted);transition:all var(--transition)}
+.drawer-close:hover{background:var(--surface3);color:var(--text)}
+.drawer-item{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:var(--radius-sm);font-size:14px;font-weight:500;color:var(--muted);transition:all var(--transition);width:100%;text-align:left}
+.drawer-item i{font-size:18px}
+.drawer-item:hover{background:var(--surface2);color:var(--text)}
+.drawer-item.active{background:var(--accent-light);color:var(--accent)}
+
+/* ── TYPOGRAPHY ── */
+.pg-label{font-size:12px;font-weight:500;color:var(--muted);letter-spacing:0.4px;text-transform:uppercase;margin-bottom:2px}
+.pg-title{font-family:var(--font-display);font-size:20px;font-weight:600;letter-spacing:-0.5px;line-height:1.15}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.section-head--tight{margin-bottom:6px}
+.section-title{font-size:14px;font-weight:600;letter-spacing:-0.2px}
+.section-action{font-size:13px;color:var(--accent);cursor:pointer;font-weight:500}
+
+/* ── HERO CARD ── */
+.hero-card{
+background:var(--accent);color:white;
+border-radius:var(--radius);padding:24px;
+position:relative;overflow:hidden;
+}
+.hero-card::before{content:'';position:absolute;top:-40px;right:-40px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,0.07);pointer-events:none}
+.hero-card::after{content:'';position:absolute;bottom:-25px;right:20px;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,0.04);pointer-events:none}
+.hero-eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:1px;opacity:0.7;margin-bottom:8px}
+.hero-amount{font-family:var(--font-mono);font-size:36px;font-weight:500;letter-spacing:-1.5px;margin-bottom:6px}
+.hero-amount sup{font-size:18px;opacity:0.7;vertical-align:super;letter-spacing:0}
+.hero-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,0.18);border-radius:20px;padding:4px 11px;font-size:12px;font-weight:500;margin-bottom:18px}
+.hero-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.hero-stat-label{font-size:10px;opacity:0.65;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px}
+.hero-stat-val{font-size:15px;font-weight:600}
+.hero-amount-wrap{
+  position:relative;
+  min-height:48px;
+  margin-bottom:6px;
+}
+.hero-amount{
+  position:absolute;
+  inset:0;
+  width:100%;
+  opacity:0;
+  transition:opacity 0.5s ease;
+  cursor:pointer;
+}
+.hero-amount--visible{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+}
+.hero-amount--hidden{
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+}
+
+/* ── METRIC GRID ── */
+.metric-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.metric-card{
+background:var(--surface);border:0.5px solid var(--border);
+border-radius:var(--radius-sm);padding:16px;
+cursor:pointer;transition:all var(--transition);
+}
+.metric-card:hover{border-color:var(--accent-border);transform:translateY(-2px)}
+.metric-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;margin-bottom:12px}
+.metric-label{font-size:12px;color:var(--muted);margin-bottom:3px}
+.metric-val{font-family:var(--font-mono);font-size:16px;font-weight:500;margin-bottom:2px}
+.metric-sub{font-size:11px;color:var(--muted)}
+.metric-bar{height:2px;background:var(--surface3);border-radius:2px;margin-top:10px;overflow:hidden}
+.metric-fill{height:100%;border-radius:2px;background:var(--accent);transition:width 1s cubic-bezier(0.4,0,0.2,1)}
+.metric-fill.g{background:var(--green)}
+
+
+/* ── TRANSACTIONS ── */
+.tx-list{display:flex;flex-direction:column;gap:6px}
+.tx-row{
+background:var(--surface);border:0.5px solid var(--border);
+border-radius:var(--radius-sm);padding:13px 15px;
+display:flex;align-items:center;gap:12px;
+cursor:pointer;transition:all var(--transition);
+}
+.tx-row:hover{border-color:var(--border-md);transform:translateX(3px)}
+.tx-icon{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.tx-icon.ig{background:var(--accent-light);color:var(--accent)}
+.tx-icon.tg{background:var(--green-light);color:var(--green)}
+.tx-icon.wa{background:var(--green-light);color:var(--green)}
+.tx-icon.tt{background:var(--surface2);color:var(--text)}
+.tx-meta{flex:1;min-width:0}
+.tx-platform{font-size:13px;font-weight:500}
+.tx-time{font-size:11px;color:var(--muted);margin-top:1px}
+.tx-right{text-align:right}
+.tx-amt{font-family:var(--font-mono);font-size:14px;font-weight:500;margin-bottom:3px}
+.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;letter-spacing:0.2px}
+.badge.paid{background:var(--green-light);color:var(--green)}
+.badge.pending{background:var(--amber-light);color:var(--amber)}
+.badge.failed{background:var(--red-light);color:var(--red)}
+
+/* ── ADVISOR TEASER ── */
+.advisor-teaser{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:16px;cursor:pointer;transition:all var(--transition)}
+.advisor-teaser:hover{border-color:var(--accent-border)}
+.adv-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.adv-icon{width:38px;height:38px;border-radius:10px;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.adv-title{font-size:14px;font-weight:600}
+.adv-sub{font-size:12px;color:var(--muted);margin-top:1px}
+.adv-prompt{background:var(--surface2);border-radius:var(--radius-xs);padding:11px 13px;font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px;transition:all var(--transition)}
+.advisor-teaser:hover .adv-prompt{color:var(--text)}
+.adv-prompt-arrow{margin-left:auto;color:var(--accent);font-size:15px}
+
+/* ── LINK GENERATOR ── */
+.form-field{display:flex;flex-direction:column;gap:6px}
+.form-label{font-size:12px;font-weight:500;color:var(--muted);letter-spacing:0.3px}
+.form-hint{font-size:11px;color:var(--subtle);margin-top:-2px}
+.platform-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.plat-btn{
+padding:14px 12px;border-radius:var(--radius-sm);
+border:0.5px solid var(--border);background:var(--surface);
+display:flex;align-items:center;gap:10px;
+font-size:14px;font-weight:500;color:var(--text);
+transition:all var(--transition);
+}
+.plat-btn:hover{border-color:var(--border-md);background:var(--surface2)}
+.plat-btn.sel{border-color:var(--accent-border);background:var(--accent-light);color:var(--accent)}
+.plat-btn i{font-size:20px}
+.text-input{
+width:100%;padding:11px 13px;
+border-radius:var(--radius-xs);
+border:0.5px solid var(--border);
+background:var(--surface);color:var(--text);
+font-size:14px;outline:none;
+transition:border-color var(--transition);
+}
+.text-input:focus{border-color:var(--accent-border)}
+.text-input::placeholder{color:var(--subtle)}
+.cta{
+width:100%;padding:14px;
+border-radius:var(--radius-sm);
+background:var(--accent);color:white;
+font-size:15px;font-weight:600;
+display:flex;align-items:center;justify-content:center;gap:8px;
+box-shadow:0 18px 40px rgba(196,82,42,0.18);
+transition:all var(--transition);letter-spacing:-0.2px;
+}
+.cta:hover{opacity:0.94;transform:translateY(-1px);box-shadow:0 22px 50px rgba(196,82,42,0.24)}
+.cta:active{transform:scale(0.98)}
+.cta:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+.cta.secondary{background:var(--surface2);color:var(--text);border:0.5px solid var(--border)}
+.cta.secondary:hover{background:var(--surface3)}
+.link-result{
+background:var(--surface2);border-radius:var(--radius-sm);
+padding:16px;display:none;flex-direction:column;gap:12px;
+animation:slideUp 0.3s ease;
+}
+.link-result.show{display:flex}
+@keyframes slideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.link-url{font-family:var(--font-mono);font-size:13px;color:var(--accent);word-break:break-all;line-height:1.5}
+.link-actions{display:flex;gap:8px}
+.link-btn{flex:1;padding:10px;border-radius:var(--radius-xs);background:var(--surface);border:0.5px solid var(--border);font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:6px;transition:all var(--transition)}
+.link-btn:hover{background:var(--accent-light);color:var(--accent);border-color:var(--accent-border)}
+.link-platform-tag{display:inline-flex;align-items:center;gap:5px;background:var(--accent-light);color:var(--accent);border-radius:20px;padding:3px 10px;font-size:12px;font-weight:500}
+
+/* ── ADVISOR PAGE ── */
+.advisor-context{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:16px}
+.context-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
+.ctx-chip{background:var(--surface2);border-radius:var(--radius-xs);padding:10px 12px}
+.ctx-chip-label{font-size:11px;color:var(--muted);margin-bottom:2px}
+.ctx-chip-val{font-size:13px;font-weight:600}
+.advisor-form{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:16px;display:flex;flex-direction:column;gap:12px}
+.caption-area{
+width:100%;padding:12px 13px;
+border-radius:var(--radius-xs);
+border:0.5px solid var(--border);
+background:var(--surface2);color:var(--text);
+font-size:14px;outline:none;resize:none;height:96px;
+transition:border-color var(--transition);line-height:1.6;
+}
+.caption-area:focus{border-color:var(--accent-border);background:var(--surface)}
+.caption-area::placeholder{color:var(--subtle)}
+.char-count{font-size:11px;color:var(--subtle);text-align:right;margin-top:-6px}
+.ai-output{
+background:var(--accent-light);
+border:0.5px solid var(--accent-border);
+border-radius:var(--radius-sm);padding:16px;
+display:none;flex-direction:column;gap:12px;
+animation:slideUp 0.35s ease;
+}
+.ai-output.show{display:flex}
+.ai-output-head{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:0.5px}
+.ai-cursor{display:inline-block;width:2px;height:14px;background:var(--accent);border-radius:1px;margin-left:1px;animation:blink 1s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.ai-text{font-size:14px;line-height:1.65;color:var(--text)}
+.ai-chips{display:flex;gap:8px;flex-wrap:wrap}
+.ai-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;background:var(--surface);border:0.5px solid var(--accent-border);font-size:12px;font-weight:500;color:var(--accent)}
+.ai-action{
+display:flex;align-items:center;gap:10px;
+background:var(--surface);border:0.5px solid var(--border);
+border-radius:var(--radius-xs);padding:11px 13px;
+cursor:pointer;transition:all var(--transition);
+font-size:13px;font-weight:500;
+}
+.ai-action:hover{border-color:var(--accent-border);color:var(--accent)}
+.ai-action i{font-size:17px;color:var(--accent)}
+.ai-confidence{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);padding-top:4px;border-top:0.5px solid var(--accent-border)}
+.confidence-bar{flex:1;height:3px;background:rgba(196,82,42,0.15);border-radius:2px;overflow:hidden}
+.confidence-fill{height:100%;background:var(--accent);border-radius:2px;transition:width 1s ease}
+.insight-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid var(--border);font-size:13px}
+.insight-row:last-child{border-bottom:none;padding-bottom:0}
+.insight-label{color:var(--muted)}
+.insight-val{font-weight:500}
+.insight-val.warn{color:var(--amber)}
+.insight-val.accent{color:var(--accent)}
+.insight-val.green{color:var(--green)}
+
+/* ── bar chart ── */
+.platform-stats {
+  background: var(--surface);
+  border-radius:13px;
+  border: 0.5px solid var(--border);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.platform-bar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.platform-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 90px;
+  flex-shrink: 0;
+}
+
+.platform-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #C4522A;
+  flex-shrink: 0;
+}
+
+.platform-dot.whatsapp { background: #F08B5C; }
+.platform-dot.telegram { background: #A1452E; }
+
+.platform-name {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.platform-bar-track {
+  flex: 1;
+  height: 6px;
+  background: var(--surface-2);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.platform-bar-fill {
+  height: 100%;
+  opacity: 0.5;
+  background: #C4522A;
+  border-radius: 99px;
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.platform-bar-fill.whatsapp { background: #F08B5C; }
+.platform-bar-fill.telegram { background: #A1452E; }
+
+.platform-percent {
+  font-size: 13px;
+  font-family: 'DM Mono', monospace;
+  color: var(--text);
+  width: 32px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* ── TRANSACTIONS PAGE ── */
+.search-row{display:flex;align-items:center;gap:8px;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-xs);padding:10px 13px}
+.search-row i{color:var(--muted);font-size:18px;flex-shrink:0}
+.search-input{flex:1;border:none;background:transparent;color:var(--text);font-size:14px;outline:none}
+.search-input::placeholder{color:var(--subtle)}
+.filter-bar{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
+.filter-bar::-webkit-scrollbar{display:none}
+.filter-pill{padding:6px 14px;border-radius:20px;border:0.5px solid var(--border);background:var(--surface);font-size:13px;font-weight:500;color:var(--muted);white-space:nowrap;transition:all var(--transition)}
+.filter-pill:hover{background:var(--surface2);color:var(--text)}
+.filter-pill.active{background:var(--accent-light);color:var(--accent);border-color:var(--accent-border)}
+.tx-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tx-sum-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-xs);padding:12px;text-align:center}
+.tx-sum-label{font-size:11px;color:var(--muted);margin-bottom:4px}
+.tx-sum-val{font-family:var(--font-mono);font-size:15px;font-weight:500}
+
+/* ── SKELETON ── */
+.skeleton{border-radius:var(--radius-xs);background:linear-gradient(90deg,var(--surface2) 25%,var(--surface3) 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.6s infinite}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ── EMPTY STATE ── */
+.empty-state-title{font-size:25px;font-weight:600;margin-bottom:8px; width:100%; opacity: 0.7;}
+.empty-state p{font-size:14px;line-height:1.6}
+.empty-state button{ border:0.5px solid rgb(208, 199, 199);margin-top:16px}
+.rev {display: none; font-size: 12px; }
+.revalt{display: none;}
+.empty-state { display: none; padding: 15; }       /* hidden by default */
+.show { display: block; }  /* visible when .show is added */
+
+
+.glowing-text{
+  margin-top:10px;
+  max-width:680px;
+  padding:14px 16px;
+  border-radius:14px;
+  background:rgba(196,82,42,0.08);
+  border:1px solid rgba(196,82,42,0.22);
+  color:var(--accent);
+  font-size:13px;
+  line-height:1.6;
+  font-weight:500;
+}
+
+.account-avatar{width:60px;height:60px;border-radius:50%;background:var(--);color:var(--accent);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.account-name{
+  padding: 8px;margin-top: 5px;font-size: 20px;color: var(--accent);font-family: var(--font-mono);
+}
+
+/* ── TOAST ── */
+#toast{
+position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(16px);
+background:var(--text);color:var(--bg);
+padding:9px 18px;border-radius:20px;
+font-size:13px;font-weight:500;
+opacity:0;pointer-events:none;
+transition:all 0.28s cubic-bezier(0.4,0,0.2,1);
+z-index:999;white-space:nowrap;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── RESPONSIVE ── */
+@media(min-width:768px){
+#topbar{display:none}
+#sidebar{display:flex}
+#bottomnav{display:none}
+.page{padding:32px 36px}
+.pg-title{font-size:30px}
+.hero-amount{font-size:42px}
+.metric-grid{grid-template-columns:repeat(4,1fr)}
+.tx-summary{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:767px){
+#sidebar{display:none}
+#topbar{display:flex}
+#bottomnav{display:block}
+.page{padding:18px 16px}
+.pg-title{font-size:22px}
+.hero-amount{font-size:32px}
+.metric-grid{grid-template-columns:repeat(2,1fr)}
+.hero-row{gap:8px}
+.hero-stat-val{font-size:14px}
+#toast{bottom:70px}
+}
+
+/* Share Modal */
+.share-modal-overlay{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,0.5);display:none;z-index:999;
+}
+.share-modal-overlay.active{display:block}
+.share-modal{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--surface);border-radius:var(--radius) var(--radius) 0 0;
+  padding:24px 16px;display:none;z-index:1000;
+  max-height:80vh;overflow-y:auto;
+  animation:slideUp 0.3s ease-out;
+}
+.share-modal.active{display:block}
+@keyframes slideUp{
+  from{transform:translateY(100%);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+.share-modal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:20px;
+}
+#share-modal-title{
+  font-size:18px;font-weight:600;color:var(--text);
+}
+.share-modal-close{
+  background:none;border:none;cursor:pointer;
+  color:var(--muted);font-size:20px;padding:4px;
+  display:flex;align-items:center;justify-content:center;
+}
+.share-modal-content{
+  display:flex;flex-direction:column;gap:12px;
+}
+.share-option{
+  display:flex;align-items:center;gap:16px;
+  padding:16px;border:0.5px solid var(--border);
+  border-radius:var(--radius-sm);background:var(--surface);
+  cursor:pointer;transition:all var(--transition);
+  font-size:15px;font-weight:500;color:var(--text);
+}
+.share-option:hover{
+  background:var(--surface2);border-color:var(--border-md);
+}
+.share-option i{
+  font-size:20px;color:var(--muted);flex-shrink:0;
+}
+
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- SIDEBAR -->
+  <aside id="sidebar" role="navigation" aria-label="Main navigation">
+    <div class="sidebar-logo">TRAQQ.<em>Revenue Intelligence</em></div>
+    <button class="sidebar-item active" data-page="home"><i class="ti ti-home" aria-hidden="true"></i> Home</button>
+    <button class="sidebar-item" data-page="link"><i class="ti ti-link" aria-hidden="true"></i> Generate link</button>
+    <button class="sidebar-item" data-page="tx"><i class="ti ti-receipt" aria-hidden="true"></i> Transactions</button>
+    <button class="sidebar-item" data-page="advisor"><i class="ti ti-sparkles" aria-hidden="true"></i> TRAQQ Advisor</button>
+    <div class="sidebar-bottom">
+      <div class="sidebar-profile">
+        <div class="sidebar-avatar">AO</div>
+        <div><div class="sidebar-name">Amaka Osei</div><div class="sidebar-sub">Korapay connected</div></div>
+      </div>
+      <button class="sidebar-item" onclick="toggleTheme()"><i class="ti ti-moon" id="theme-icon-s" aria-hidden="true"></i> <span id="theme-label-s">Dark mode</span></button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div id="main">
+    <!-- TOP BAR (mobile) -->
+    <header id="topbar">
+      <div class="topbar-logo" href="onboarding.html">TRAQQ.</div>
+      <div class="topbar-actions">
+        <button class="icon-btn" onclick="toggleTheme()" aria-label="Toggle theme"><i class="ti ti-moon" id="theme-icon-m"></i></button>
+        <button class="icon-btn" onclick="openDrawer()" aria-label="Open menu"><i class="ti ti-menu-2"></i></button>
+      </div>
+    </header>
+   
+
+    <div id="scroll">
+      <!-- HOME -->
+      <main class="page active" id="page-home">
+        <h2 class="sr-only">Dashboard overview</h2>
+        <div>
+          <div class="pg-label">Hello, Amaka <span style="font-size: 22px">👋</span></div>
+          <div class="pg-title rev" id = "rev">Your revenue this month</div>
+          <div class="pg-title revalt" id="revalt">Welcome to Traqq</div>
+        </div>
+         <!-- Empty State -->
+        <div class="empty-state hero-card" id="emptyState">
+          <div class="empty-state-title">No Sales yet</div>
+          <p class="empty-state-desc">Generate your first payment link and share it on Instagram, WhatsApp or Telegram to start tracking.</p>
+          <button class="cta" style="width:auto; border:1px solid whitesmoke; padding:12px 24px;margin-top:4px" onclick="goPage('link')"><i class="ti ti-link" aria-hidden="true"></i>Generate your first link</button>
+        </div>
+
+        <!-- HERO -->
+        <div class="hero-card" role="region" id="dashboardContent" aria-label="Total revenue">
+          <div class="hero-eyebrow">Total revenue — May 2025</div>
+          <div class="hero-amount-wrap">
+            <div class="hero-amount hero-amount--visible" id="amount-showing"><sup>₦</sup>380,000 👁</div>
+            <div class="hero-amount hero-amount--hidden" id="amount-hide">...... <i class="fa-thin fa-eye-closed"></i></div>
+          </div>
+          <div class="hero-badge"><i class="ti ti-trending-up" aria-hidden="true" style="font-size:13px"></i> +22% from April</div>
+          <div class="hero-row">
+            <div><div class="hero-stat-label">Transactions</div><div class="hero-stat-val">98</div></div>
+            <div><div class="hero-stat-label">Avg. order</div><div class="hero-stat-val">₦3,878</div></div>
+            <div><div class="hero-stat-label">Best day</div><div class="hero-stat-val">Tuesday</div></div>
+          </div>
+        </div>
+
+        <!--GET YOUR LINK-->
+         <div class="link-result" style="display:block" id="link-result">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="font-size:13px;font-weight:600">Your Kora Link</div>
+          </div>
+          <div class="link-url" id="link-url">traqq.link/amaka/ig/abc123</div>
+          <div class="link-actions">
+            <button class="link-btn" onclick="copyLink()"><i class="ti ti-copy" aria-hidden="true"></i>Copy link</button>
+            <button class="link-btn" onclick="openShareModal()"><i class="ti ti-share" aria-hidden="true"></i>Share</button>
+          </div>
+        </div>
+
+        <!-- PLATFORMS -->
+        <div>
+          <div class="section-head"><div class="section-title">Revenue by platform</div><div class="section-action" onclick="goPage('tx')">See all</div></div>
+          <div class="metric-grid" role="list">
+            <div class="metric-card" role="listitem" onclick="goPage('tx')">
+              <div class="metric-icon" style="background:var(--accent-light);color:var(--accent)"><i class="ti ti-brand-instagram" aria-label="Instagram"></i></div>
+              <div class="metric-label">Instagram</div>
+              <div class="metric-val">₦258,400</div>
+              <div class="metric-sub">68% · 41 sales</div>
+              <div class="metric-bar"><div class="metric-fill" style="width:0%" data-w="68%"></div></div>
+            </div>
+            <div class="metric-card" role="listitem" onclick="goPage('tx')">
+              <div class="metric-icon" style="background:var(--green-light);color:var(--green)"><i class="ti ti-brand-telegram" aria-label="Telegram"></i></div>
+              <div class="metric-label">Telegram</div>
+              <div class="metric-val">₦83,600</div>
+              <div class="metric-sub">22% · 38 sales</div>
+              <div class="metric-bar"><div class="metric-fill g" style="width:0%" data-w="22%"></div></div>
+            </div>
+            <div class="metric-card" role="listitem" onclick="goPage('tx')">
+              <div class="metric-icon" style="background:var(--green-light);color:var(--green)"><i class="ti ti-brand-whatsapp" aria-label="WhatsApp"></i></div>
+              <div class="metric-label">WhatsApp</div>
+              <div class="metric-val">₦38,000</div>
+              <div class="metric-sub">10% · 19 sales</div>
+              <div class="metric-bar"><div class="metric-fill g" style="width:0%" data-w="10%"></div></div>
+            </div>
+            <div class="metric-card" role="listitem" onclick="goPage('link')" style="display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:6px;border-style:dashed;opacity:0.7">
+              <i class="ti ti-plus" style="font-size:22px;color:var(--muted)"></i>
+              <div class="metric-label" style="font-size:12px">Add TikTok</div>
+              <div style="font-size:11px;color:var(--subtle)">Create a link</div>
+            </div>
+          </div>
+        </div>
+          <div class="section-head section-head--tight"><div class="section-title">Top platforms this week</div></div>
+          <div class="platform-stats">
+  <div class="platform-bar-item">
+    <div class="platform-bar-left">
+      <span class="platform-dot instagram"></span>
+      <span class="platform-name">Instagram</span>
+    </div>
+    <div class="platform-bar-track">
+      <div class="platform-bar-fill" style="width: 72%"></div>
+    </div>
+    <span class="platform-percent">72%</span>
+  </div>
+
+  <div class="platform-bar-item">
+    <div class="platform-bar-left">
+      <span class="platform-dot whatsapp"></span>
+      <span class="platform-name">WhatsApp</span>
+    </div>
+    <div class="platform-bar-track">
+      <div class="platform-bar-fill whatsapp" style="width: 20%"></div>
+    </div>
+    <span class="platform-percent">20%</span>
+  </div>
+
+  <div class="platform-bar-item">
+    <div class="platform-bar-left">
+      <span class="platform-dot telegram"></span>
+      <span class="platform-name">Telegram</span>
+    </div>
+    <div class="platform-bar-track">
+      <div class="platform-bar-fill telegram" style="width: 8%"></div>
+    </div>
+    <span class="platform-percent">8%</span>
+  </div>
+</div>          
+    
+
+        <!-- RECENT TX -->
+        <div>
+          <div class="section-head"><div class="section-title">Recent transactions</div><div class="section-action" onclick="goPage('tx')">View all</div></div>
+          <div class="tx-list">
+            <div class="tx-row" onclick="goPage('tx')"><div class="tx-icon ig"><i class="ti ti-brand-instagram" aria-hidden="true"></i></div><div class="tx-meta"><div class="tx-platform">Instagram</div><div class="tx-time">Today, 8:14 PM</div></div><div class="tx-right"><div class="tx-amt">₦12,500</div><span class="badge paid">Paid</span></div></div>
+            <div class="tx-row" onclick="goPage('tx')"><div class="tx-icon tg"><i class="ti ti-brand-telegram" aria-hidden="true"></i></div><div class="tx-meta"><div class="tx-platform">Telegram</div><div class="tx-time">Today, 6:42 PM</div></div><div class="tx-right"><div class="tx-amt">₦8,000</div><span class="badge paid">Paid</span></div></div>
+            <div class="tx-row" onclick="goPage('tx')"><div class="tx-icon wa"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i></div><div class="tx-meta"><div class="tx-platform">WhatsApp</div><div class="tx-time">Today, 4:05 PM</div></div><div class="tx-right"><div class="tx-amt">₦5,500</div><span class="badge pending">Pending</span></div></div>
+            <!-- skeleton -->
+            <div style="display:flex;align-items:center;gap:12px;padding:13px 15px;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-sm)">
+              <div class="skeleton" style="width:38px;height:38px;border-radius:50%;flex-shrink:0"></div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+                <div class="skeleton" style="height:12px;width:80px"></div>
+                <div class="skeleton" style="height:10px;width:60px"></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+                <div class="skeleton" style="height:14px;width:56px"></div>
+                <div class="skeleton" style="height:10px;width:36px;border-radius:20px"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ADVISOR TEASER -->
+        <div class="advisor-teaser" onclick="goPage('advisor')" role="button" tabindex="0" aria-label="Open TRAQQ Advisor">
+          <div class="adv-head">
+            <div class="adv-icon"><i class="ti ti-sparkles" aria-hidden="true"></i></div>
+            <div><div class="adv-title">TRAQQ Advisor</div><div class="adv-sub">Tells you when & where to post next</div></div>
+          </div>
+          <div class="adv-prompt"><i class="ti ti-pencil" style="font-size:15px" aria-hidden="true"></i><span>Paste your next caption…</span><i class="ti ti-arrow-right adv-prompt-arrow" aria-hidden="true"></i></div>
+        </div>
+        <div style="height:8px"></div>
+      </main>
+
+      <!-- LINK GENERATOR -->
+      <main class="page" id="page-link">
+        <h2 class="sr-only">Generate payment link</h2>
+        <div>
+          <div class="pg-label">Get paid, get data</div>
+          <div class="pg-title">Generate a link</div>
+          <p class="glowing-text">One link works everywhere. TRAQQ automatically detects if it was opened from Instagram, WhatsApp, Telegram or any browser.</p>
+        </div>
+        
+        <div class="form-field">
+          <label class="form-label" for="item-label">Item label <span class="form-hint" style="display:inline">(optional)</span></label>
+          <input type="text" id="item-label" class="text-input" placeholder="e.g. Y2K denim set" />
+        </div>
+        <div class="form-field">
+          <label class="form-label" for="link-amount">Amount <span class="form-hint" style="display:inline">(leave blank for open)</span></label>
+          <input type="text" id="link-amount" class="text-input" placeholder="₦ 0.00" inputmode="numeric" />
+        </div>
+        <button class="cta" onclick="genLink()" id="gen-btn"><i class="ti ti-link" aria-hidden="true"></i>Generate payment link</button>
+        <div class="link-result" id="link-result">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="font-size:13px;font-weight:600">Link ready</div>
+            <div class="link-platform-tag" id="link-plat-tag"><i class="ti ti-brand-instagram" style="font-size:13px"></i><span id="link-plat-name">Instagram</span></div>
+          </div>
+          <div class="link-url" id="link-url">traqq.link/amaka/ig/abc123</div>
+          <div class="link-actions">
+            <button class="link-btn" onclick="copyLink()"><i class="ti ti-copy" aria-hidden="true"></i>Copy link</button>
+            <button class="link-btn" onclick="openShareModal()"><i class="ti ti-share" aria-hidden="true"></i>Share</button>
+          </div>
+          <div style="padding:11px 12px;background:var(--green-light);border-radius:var(--radius-xs);font-size:13px;color:var(--green);display:flex;align-items:center;gap:8px">
+            <i class="ti ti-check" aria-hidden="true"></i>
+            Every payment through this link is automatically tagged to <strong id="link-plat-confirm">Instagram</strong>.
+          </div>
+        </div>
+        <div style="height:8px"></div>
+      </main>
+
+      <!-- TRANSACTIONS -->
+      <main class="page" id="page-tx">
+        <h2 class="sr-only">All transactions</h2>
+        <div>
+          <div class="pg-label">All payments</div>
+          <div class="pg-title">Transactions</div>
+        </div>
+        <div class="tx-summary" role="region" aria-label="Transaction summary">
+          <div class="tx-sum-card"><div class="tx-sum-label">This month</div><div class="tx-sum-val">₦380K</div></div>
+          <div class="tx-sum-card"><div class="tx-sum-label">Total</div><div class="tx-sum-val">98</div></div>
+          <div class="tx-sum-card"><div class="tx-sum-label">Pending</div><div class="tx-sum-val" style="color:var(--amber)">3</div></div>
+        </div>
+        <div class="search-row" role="search">
+          <i class="ti ti-search" aria-hidden="true"></i>
+          <input type="search" class="search-input" placeholder="Search transactions…" aria-label="Search transactions" />
+        </div>
+        <div class="filter-bar" role="group" aria-label="Filter transactions">
+          <button class="filter-pill active" onclick="setFilter(this)">All</button>
+          <button class="filter-pill" onclick="setFilter(this)">Instagram</button>
+          <button class="filter-pill" onclick="setFilter(this)">Telegram</button>
+          <button class="filter-pill" onclick="setFilter(this)">WhatsApp</button>
+          <button class="filter-pill" onclick="setFilter(this)">Paid</button>
+          <button class="filter-pill" onclick="setFilter(this)">Pending</button>
+        </div>
+        <div class="tx-list" role="list">
+          <div class="tx-row" role="listitem" tabindex="0"><div class="tx-icon ig"><i class="ti ti-brand-instagram" aria-hidden="true"></i></div><div class="tx-meta"><div class="tx-platform">Instagram</div><div class="tx-time">May 22 · 8:14 PM</div></div><div class="tx-right"><div class="tx-amt">₦12,500</div><span class="badge paid">Paid</span></div></div>
+          <div class="tx-row" role="listitem" tabindex="0"><div class="tx-icon tg"><i class="ti ti-brand-telegram" aria-hidden="true"></i></div><div class="tx-meta"><div class="tx-platform">Telegram</div><div class="tx-time">May 22 · 6:42 PM</div></div><div class="tx-right"><div class="tx-amt">₦8,000</div><span class="badge paid">Paid</span></div></div>
+          <div class="tx-row" role="listitem" tabindex="0"><div class="tx-icon wa"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i></div><div class="tx-meta"><div class="tx-platform">WhatsApp</div><div class="tx-time">May 22 · 4:05 PM</div></div><div class="tx-right"><div class="tx-amt">₦5,500</div><span class="badge pending">Pending</span></div></div>
+          <div class="tx-row" role="listitem" tabindex="0"><div class="tx-icon ig"><i class="ti ti-brand-instagram" aria-hidden="true"></i></div><div class="tx-meta"><div class="tx-platform">Instagram</div><div class="tx-time">May 21 · 9:30 PM</div></div><div class="tx-right"><div class="tx-amt">₦15,000</div><span class="badge paid">Paid</span></div></div>
+          <div class="tx-row" role="listitem" tabindex="0"><div class="tx-icon tg"><i class="ti ti-brand-telegram" aria-hidden="true"></i></div><div class="tx-meta"><div class="tx-platform">Telegram</div><div class="tx-time">May 21 · 7:18 PM</div></div><div class="tx-right"><div class="tx-amt">₦6,200</div><span class="badge paid">Paid</span></div></div>
+          <div class="tx-row" role="listitem" tabindex="0"><div class="tx-icon ig"><i class="ti ti-brand-instagram" aria-hidden="true"></i></div><div class="tx-meta"><div class="tx-platform">Instagram</div><div class="tx-time">May 20 · 8:55 PM</div></div><div class="tx-right"><div class="tx-amt">₦9,800</div><span class="badge paid">Paid</span></div></div>
+          <div class="tx-row" role="listitem" tabindex="0"><div class="tx-icon wa"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i></div><div class="tx-meta"><div class="tx-platform">WhatsApp</div><div class="tx-time">May 20 · 2:10 PM</div></div><div class="tx-right"><div class="tx-amt">₦4,500</div><span class="badge pending">Pending</span></div></div>
+          <div class="tx-row" role="listitem" tabindex="0"><div class="tx-icon tg"><i class="ti ti-brand-telegram" aria-hidden="true"></i></div><div class="tx-meta"><div class="tx-platform">Telegram</div><div class="tx-time">May 19 · 6:00 PM</div></div><div class="tx-right"><div class="tx-amt">₦11,000</div><span class="badge paid">Paid</span></div></div>
+          <div class="tx-row" role="listitem" tabindex="0"><div class="tx-icon ig"><i class="ti ti-brand-instagram" aria-hidden="true"></i></div><div class="tx-meta"><div class="tx-platform">Instagram</div><div class="tx-time">May 19 · 8:22 PM</div></div><div class="tx-right"><div class="tx-amt">₦7,500</div><span class="badge failed">Failed</span></div></div>
+        </div>
+        <div style="height:8px"></div>
+      </main>
+
+      <!-- ADVISOR -->
+      <main class="page" id="page-advisor">
+        <h2 class="sr-only">TRAQQ Advisor — AI post recommendations</h2>
+        <div>
+          <div class="pg-label">AI-powered</div>
+          <div class="pg-title">TRAQQ Advisor</div>
+        </div>
+
+        <!-- context chips -->
+        <div class="advisor-context" role="region" aria-label="Your data context">
+          <div style="font-size:13px;color:var(--muted);line-height:1.5">Based on your last 30 days. The more you sell through TRAQQ, the sharper this gets.</div>
+          <div class="context-grid">
+            <div class="ctx-chip"><div class="ctx-chip-label">Top platform</div><div class="ctx-chip-val" style="color:var(--accent)">Instagram</div></div>
+            <div class="ctx-chip"><div class="ctx-chip-label">Peak window</div><div class="ctx-chip-val">Tue/Fri 7–9PM</div></div>
+            <div class="ctx-chip"><div class="ctx-chip-label">Avg. order</div><div class="ctx-chip-val">₦3,878</div></div>
+            <div class="ctx-chip"><div class="ctx-chip-label">Telegram AOV</div><div class="ctx-chip-val" style="color:var(--amber)">₦2,200 ⚠</div></div>
+          </div>
+        </div>
+
+        <!-- input -->
+        <div class="advisor-form">
+          <div class="form-field">
+            <label class="form-label" for="caption-in">Your next post caption</label>
+            <textarea id="caption-in" class="caption-area" placeholder="New arrivals just dropped — Y2K denim sets, limited sizes. DM to order…" oninput="updateCount(this)"></textarea>
+            <div class="char-count"><span id="char-ct">0</span> / 280</div>
+          </div>
+          <button class="cta" id="adv-btn" onclick="runAdvisor()"><i class="ti ti-sparkles" aria-hidden="true"></i>Get recommendation</button>
+        </div>
+
+        <!-- AI output -->
+        <div class="ai-output" id="ai-out" role="region" aria-live="polite" aria-label="AI recommendation">
+          <div class="ai-output-head"><i class="ti ti-sparkles" aria-hidden="true"></i>TRAQQ Advisor <span id="ai-cursor" class="ai-cursor" style="display:none"></span></div>
+          <div class="ai-text" id="ai-text-out"></div>
+          <div class="ai-chips" id="ai-chips" style="display:none">
+            <div class="ai-chip"><i class="ti ti-brand-instagram" style="font-size:13px" aria-hidden="true"></i>Instagram first</div>
+            <div class="ai-chip"><i class="ti ti-clock" style="font-size:13px" aria-hidden="true"></i>Tue 8PM</div>
+            <div class="ai-chip"><i class="ti ti-chart-bar" style="font-size:13px" aria-hidden="true"></i>Avg. ₦12,500</div>
+          </div>
+          <div class="ai-action" id="ai-action" style="display:none" onclick="goPage('link')">
+            <i class="ti ti-link" aria-hidden="true"></i>
+            <span>Create an Instagram link for this post</span>
+            <i class="ti ti-arrow-right" style="margin-left:auto;font-size:15px;color:var(--muted)" aria-hidden="true"></i>
+          </div>
+          <div class="ai-confidence" id="ai-conf" style="display:none">
+            <span>Confidence</span>
+            <div class="confidence-bar"><div class="confidence-fill" id="conf-fill" style="width:0%"></div></div>
+            <span id="conf-pct">0%</span>
+          </div>
+        </div>
+
+        <!-- insights -->
+        <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:16px" role="region" aria-label="Revenue insights">
+          <div class="section-title" style="margin-bottom:12px">Revenue insights</div>
+          <div class="insight-row"><span class="insight-label">Instagram drives</span><span class="insight-val accent">68% of revenue</span></div>
+          <div class="insight-row"><span class="insight-label">But only uses</span><span class="insight-val">40% of your links</span></div>
+          <div class="insight-row"><span class="insight-label">Telegram AOV vs IG</span><span class="insight-val warn">₦2,200 vs ₦6,303 — gap is widening</span></div>
+          <div class="insight-row"><span class="insight-label">Best single day</span><span class="insight-val green">Tuesday · ₦62,400 avg</span></div>
+          <div class="insight-row" style="padding-bottom:0"><span class="insight-label">Slowest window</span><span class="insight-val">Mon–Wed mornings</span></div>
+        </div>
+        <div style="height:8px"></div>
+      </main>
+      <main class="page" id="page-account">
+        <h2 class="sr-only">Account settings</h2>
+        <div>
+          <div class="pg-label">Manage your account</div>
+          <div class="pg-title">Account settings</div>
+        </div>
+        <div style="align-items: center; margin: 10%;">
+          <div class="account-avatar">AO</div>
+            <div class="account-name">Amaka Osei</div>
+
+          </div>
+          <div>
+            <h2></h2>
+          </div>
+    </div><!-- /scroll -->
+
+    <!-- BOTTOM NAV (mobile) -->
+    <nav id="bottomnav" aria-label="Main navigation">
+      <div class="bnav-inner">
+        <button class="bnav-item active" data-page="home" onclick="goPage('home')"><i class="ti ti-home" aria-hidden="true"></i><span>Home</span></button>
+        <button class="bnav-item" data-page="tx" onclick="goPage('tx')"><i class="ti ti-receipt" aria-hidden="true"></i><span>Payments</span></button>
+        <button class="bnav-fab" onclick="goPage('link')" aria-label="Generate link">
+          <div class="bnav-fab-ring"><i class="ti ti-plus" aria-hidden="true"></i></div>
+          <span style="font-size:10px;color:var(--muted);margin-top:2px">Link</span>
+        </button>
+        <button class="bnav-item" data-page="advisor" onclick="goPage('advisor')"><i class="ti ti-sparkles" aria-hidden="true"></i><span>Advisor</span></button>
+        <button class="bnav-item" onclick="goPage('account')"><i class="ti ti-user" aria-hidden="true"></i><span>Account</span></button>
+      </div>
+    </nav>
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- Drawer (mobile) -->
+<div id="drawer-overlay" onclick="closeDrawer()"></div>
+<nav id="drawer" aria-label="Mobile navigation">
+  <div class="drawer-head">
+    <div class="drawer-logo">TRAQQ.</div>
+    <button class="drawer-close" onclick="closeDrawer()" aria-label="Close menu"><i class="ti ti-x"></i></button>
+  </div>
+  <button class="drawer-item active" data-drawer="home" onclick="goPage('home');closeDrawer()"><i class="ti ti-home" aria-hidden="true"></i>Home</button>
+  <button class="drawer-item" data-drawer="link" onclick="goPage('link');closeDrawer()"><i class="ti ti-link" aria-hidden="true"></i>Generate link</button>
+  <button class="drawer-item" data-drawer="tx" onclick="goPage('tx');closeDrawer()"><i class="ti ti-receipt" aria-hidden="true"></i>Transactions</button>
+  <button class="drawer-item" data-drawer="advisor" onclick="goPage('advisor');closeDrawer()"><i class="ti ti-sparkles" aria-hidden="true"></i>TRAQQ Advisor</button>
+  <div style="margin-top:auto;padding-top:16px;border-top:0.5px solid var(--border)">
+    <div style="padding:10px 12px;align-items:center;gap:10px">
+      <div class="sidebar-avatar">AO</div>
+      <div><div class="sidebar-name">Amaka Osei</div><div class="sidebar-sub">Korapay connected</div></div>
+    </div>
+  </div>
+</nav>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<!-- Share Modal -->
+<div id="share-modal-overlay" class="share-modal-overlay" onclick="closeShareModal()"></div>
+<div id="share-modal" class="share-modal" role="dialog" aria-labelledby="share-modal-title">
+  <div class="share-modal-header">
+    <h2 id="share-modal-title">Share link</h2>
+    <button class="share-modal-close" onclick="closeShareModal()" aria-label="Close share menu"><i class="ti ti-x"></i></button>
+  </div>
+  <div class="share-modal-content">
+    <button class="share-option" onclick="shareVia('whatsapp')">
+      <i class="ti ti-brand-whatsapp"></i>
+      <span>WhatsApp</span>
+    </button>
+    <button class="share-option" onclick="shareVia('telegram')">
+      <i class="ti ti-brand-telegram"></i>
+      <span>Telegram</span>
+    </button>
+    <button class="share-option" onclick="shareVia('instagram')">
+      <i class="ti ti-brand-instagram"></i>
+      <span>Instagram</span>
+    </button>
+    <button class="share-option" onclick="shareVia('email')">
+      <i class="ti ti-mail"></i>
+      <span>Email</span>
+    </button>
+    <button class="share-option" onclick="shareVia('copy')">
+      <i class="ti ti-copy"></i>
+      <span>Copy link</span>
+    </button>
+  </div>
+</div>
+<script>
+
+  //-DASHBOARD STATE
+const hasTransactions = true; // toggle this to false to see empty state
+
+function checkDashboardState() {
+  if (hasTransactions==true) {
+    // hide empty state, show dashboard
+    document.getElementById('emptyState').classList.remove('show');
+    document.getElementById('dashboardContent').style.display = 'block';
+    document.getElementById('rev').classList.add('show')
+    document.getElementById('revalt').classList.remove('show')
+
+  } else {
+    // show empty state, hide dashboard
+    document.getElementById('emptyState').classList.add('show');
+    document.getElementById('dashboardContent').style.display = 'none';
+    document.getElementById('rev').classList.remove('show')
+    document.getElementById('revalt').classList.add('show')
+
+
+  }
+}
+checkDashboardState();
+//show amount
+const amt = document.getElementById('amount-showing');
+const amtHide = document.getElementById('amount-hide');
+amt.addEventListener('click', () => {
+  amt.classList.remove('hero-amount--visible');
+  amt.classList.add('hero-amount--hidden');
+  amtHide.classList.remove('hero-amount--hidden');
+  amtHide.classList.add('hero-amount--visible');
+});
+amtHide.addEventListener('click', () => {
+  amtHide.classList.remove('hero-amount--visible');
+  amtHide.classList.add('hero-amount--hidden');
+  amt.classList.remove('hero-amount--hidden');
+  amt.classList.add('hero-amount--visible');
+});
+
+
+// ── HEATMAP ──
+const days=['M','T','W','T','F','S','S'];
+const hours=['6AM','9AM','12PM','3PM','6PM','9PM'];
+const heat=[[0,0,1,0,1,2,1],[0,0,0,0,1,1,0],[1,0,0,1,2,2,1],[0,1,0,0,1,3,2],[1,0,1,0,2,4,3],[0,0,0,1,1,2,1]];
+function buildHeatmap(){
+  const el=document.getElementById('heatmap');
+  if(!el) return;
+  el.innerHTML='';
+  el.appendChild(Object.assign(document.createElement('div'),{className:'hm-label'}));
+  days.forEach(d=>{const l=document.createElement('div');l.className='hm-day';l.textContent=d;el.appendChild(l)});
+  heat.forEach((row,ri)=>{
+    const l=document.createElement('div');l.className='hm-label';l.textContent=hours[ri];el.appendChild(l);
+    row.forEach(v=>{const c=document.createElement('div');c.className='hm-cell'+(v?' h'+v:'');c.setAttribute('aria-label',`${hours[ri]} ${days[row.indexOf(v)]}: heat level ${v}`);el.appendChild(c)});
+  });
+}
+buildHeatmap();
+
+// animate bars when page shown
+function animateBars(){
+  document.querySelectorAll('.metric-fill[data-w]').forEach(el=>{
+    setTimeout(()=>el.style.width=el.dataset.w,100);
+  });
+}
+
+// ── NAVIGATION ──
+function goPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===id));
+  document.querySelectorAll('[data-drawer]').forEach(b=>b.classList.toggle('active',b.dataset.drawer===id));
+  document.querySelectorAll('.sidebar-item[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===id));
+  document.getElementById('scroll').scrollTop=0;
+  if(id==='home')animateBars();
+}
+
+document.querySelectorAll('.sidebar-item[data-page]').forEach(btn=>{
+  btn.addEventListener('click',()=>goPage(btn.dataset.page));
+});
+
+setTimeout(animateBars,300);
+
+// ── DRAWER ──
+function openDrawer(){document.getElementById('drawer').classList.add('open');document.getElementById('drawer-overlay').classList.add('open')}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawer-overlay').classList.remove('open')}
+
+// ── THEME ──
+let dark=false;
+function toggleTheme(){
+  dark=!dark;
+  document.documentElement.setAttribute('data-theme',dark?'dark':'');
+  const ico=dark?'ti-sun':'ti-moon';
+  document.getElementById('theme-icon-s').className='ti '+ico;
+  document.getElementById('theme-icon-m').className='ti '+ico;
+  const lbl=dark?'Light mode':'Dark mode';
+  if(document.getElementById('theme-label-s'))document.getElementById('theme-label-s').textContent=lbl;
+}
+
+// ── LINK GENERATOR ──
+let selPlatform=null;
+function selPlat(btn,p){
+  document.querySelectorAll('.plat-btn').forEach(b=>{b.classList.remove('sel');b.setAttribute('aria-pressed','false')});
+  btn.classList.add('sel');btn.setAttribute('aria-pressed','true');
+  selPlatform=p;
+  document.getElementById('link-result').classList.remove('show');
+}
+function genLink(){
+  if(!selPlatform){showToast('Pick a platform first');return}
+  const label=document.getElementById('item-label').value.trim();
+  const rand=Math.random().toString(36).substr(2,6);
+  const slug=label?label.toLowerCase().replace(/[^a-z0-9]+/g,'-').substr(0,14)+'-':'';
+  const short={instagram:'ig',telegram:'tg',whatsapp:'wa',tiktok:'tt'}[selPlatform];
+  document.getElementById('link-url').textContent=`traqq.link/amaka/${short}/${slug}${rand}`;
+  const icons={instagram:'ti-brand-instagram',telegram:'ti-brand-telegram',whatsapp:'ti-brand-whatsapp',tiktok:'ti-brand-tiktok'};
+  document.getElementById('link-plat-tag').innerHTML=`<i class="ti ${icons[selPlatform]}" style="font-size:13px" aria-hidden="true"></i><span>${selPlatform.charAt(0).toUpperCase()+selPlatform.slice(1)}</span>`;
+  document.getElementById('link-plat-confirm').textContent=selPlatform.charAt(0).toUpperCase()+selPlatform.slice(1);
+  document.getElementById('link-result').classList.add('show');
+  showToast('Link generated');
+}
+
+function copyLink(){
+  const t=document.getElementById('link-url').textContent;
+  navigator.clipboard?.writeText(t).catch(()=>{});
+  showToast('Copied to clipboard');
+}
+
+function openShareModal(){
+  const overlay=document.getElementById('share-modal-overlay');
+  const modal=document.getElementById('share-modal');
+  overlay.classList.add('active');
+  modal.classList.add('active');
+}
+
+function closeShareModal(){
+  const overlay=document.getElementById('share-modal-overlay');
+  const modal=document.getElementById('share-modal');
+  overlay.classList.remove('active');
+  modal.classList.remove('active');
+}
+
+function shareVia(platform){
+  const link=document.getElementById('link-url').textContent;
+  const text=`Check out my link: ${link}`;
+  
+  const shareUrls={
+    whatsapp:`https://wa.me/?text=${encodeURIComponent(text)}`,
+    telegram:`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent('Check out my link')}`,
+    instagram:`https://www.instagram.com/`,
+    email:`mailto:?subject=Check this out&body=${encodeURIComponent(text)}`,
+    copy:null
+  };
+  
+  if(platform==='copy'){
+    navigator.clipboard?.writeText(link).catch(()=>{});
+    showToast('Copied to clipboard');
+  } else if(platform==='instagram'){
+    showToast('Copy the link and share via Instagram');
+  } else if(shareUrls[platform]){
+    window.open(shareUrls[platform],'_blank');
+  }
+  
+  closeShareModal();
+}
+
+// ── ADVISOR — STREAMING SIMULATION ──
+const advText="Post this on **Instagram** at **8PM Tuesday**. Your last 4 high-converting sales arrived within a 2-hour window after that exact time slot — and Instagram drives 68% of your revenue when you post in the evening. Telegram has nearly the same transaction count but a significantly lower order value (₦2,200 vs ₦6,303) — consider whether you're pricing differently there.";
+function updateCount(el){document.getElementById('char-ct').textContent=el.value.length}
+function runAdvisor(){
+  const cap=document.getElementById('caption-in').value.trim();
+  if(!cap){showToast('Add a caption first');return}
+  const btn=document.getElementById('adv-btn');
+  btn.disabled=true;btn.innerHTML='<i class="ti ti-loader-2 ti-spin" aria-hidden="true"></i>Analysing your data…';
+  const out=document.getElementById('ai-out');
+  const textEl=document.getElementById('ai-text-out');
+  const cursor=document.getElementById('ai-cursor');
+  out.classList.remove('show');
+  textEl.innerHTML='';
+  document.getElementById('ai-chips').style.display='none';
+  document.getElementById('ai-action').style.display='none';
+  document.getElementById('ai-conf').style.display='none';
+  document.getElementById('conf-fill').style.width='0%';
+  setTimeout(()=>{
+    out.classList.add('show');
+    cursor.style.display='inline-block';
+    streamText(textEl,advText,0,()=>{
+      cursor.style.display='none';
+      document.getElementById('ai-chips').style.display='flex';
+      setTimeout(()=>{
+        document.getElementById('ai-action').style.display='flex';
+        document.getElementById('ai-conf').style.display='flex';
+        setTimeout(()=>{
+          document.getElementById('conf-fill').style.width='84%';
+          document.getElementById('conf-pct').textContent='84%';
+        },100);
+      },200);
+      btn.disabled=false;btn.innerHTML='<i class="ti ti-sparkles" aria-hidden="true"></i>Get recommendation';
+    });
+  },800);
+}
+function streamText(el,text,i,done){
+  if(i>=text.length){if(done)done();return}
+  const ch=text[i];
+  if(ch==='*'&&text[i+1]==='*'){
+    const end=text.indexOf('**',i+2);
+    if(end>-1){
+      const word=text.slice(i+2,end);
+      el.innerHTML+=`<strong>${word}</strong>`;
+      setTimeout(()=>streamText(el,text,end+2,done),12);return;
+    }
+  }
+  el.innerHTML+=ch;
+  setTimeout(()=>streamText(el,text,i+1,done),ch===' '?20:14);
+}
+
+// ── FILTERS ──
+function setFilter(chip){
+  document.querySelectorAll('.filter-pill').forEach(c=>c.classList.remove('active'));
+  chip.classList.add('active');
+}
+
+// ── TOAST ──
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+
+// keyboard nav on tx rows
+document.querySelectorAll('.tx-row').forEach(r=>{
+  r.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')r.click()});
+});
+</script>
+</body>
+</html>
