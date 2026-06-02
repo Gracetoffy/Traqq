@@ -503,6 +503,10 @@ font-size:13px;font-weight:500;
   font-weight:500;
 }
 
+.account-avatar{width:60px;height:60px;border-radius:50%;background:var(--);color:var(--accent);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.account-name{
+  padding: 8px;margin-top: 5px;font-size: 20px;color: var(--accent);font-family: var(--font-mono);
+}
 
 /* ── TOAST ── */
 #toast{
@@ -899,6 +903,20 @@ z-index:999;white-space:nowrap;
         </div>
         <div style="height:8px"></div>
       </main>
+      <main class="page" id="page-account">
+        <h2 class="sr-only">Account settings</h2>
+        <div>
+          <div class="pg-label">Manage your account</div>
+          <div class="pg-title">Account settings</div>
+        </div>
+        <div style="align-items: center; margin: 10%;">
+          <div class="account-avatar">AO</div>
+            <div class="account-name">Amaka Osei</div>
+
+          </div>
+          <div>
+            <h2></h2>
+          </div>
     </div><!-- /scroll -->
 
     <!-- BOTTOM NAV (mobile) -->
@@ -911,7 +929,7 @@ z-index:999;white-space:nowrap;
           <span style="font-size:10px;color:var(--muted);margin-top:2px">Link</span>
         </button>
         <button class="bnav-item" data-page="advisor" onclick="goPage('advisor')"><i class="ti ti-sparkles" aria-hidden="true"></i><span>Advisor</span></button>
-        <button class="bnav-item" onclick=""><i class="ti ti-user" aria-hidden="true"></i><span>Account</span></button>
+        <button class="bnav-item" onclick="goPage('account')"><i class="ti ti-user" aria-hidden="true"></i><span>Account</span></button>
       </div>
     </nav>
   </div><!-- /main -->
@@ -929,7 +947,7 @@ z-index:999;white-space:nowrap;
   <button class="drawer-item" data-drawer="tx" onclick="goPage('tx');closeDrawer()"><i class="ti ti-receipt" aria-hidden="true"></i>Transactions</button>
   <button class="drawer-item" data-drawer="advisor" onclick="goPage('advisor');closeDrawer()"><i class="ti ti-sparkles" aria-hidden="true"></i>TRAQQ Advisor</button>
   <div style="margin-top:auto;padding-top:16px;border-top:0.5px solid var(--border)">
-    <div style="padding:10px 12px;display:flex;align-items:center;gap:10px">
+    <div style="padding:10px 12px;align-items:center;gap:10px">
       <div class="sidebar-avatar">AO</div>
       <div><div class="sidebar-name">Amaka Osei</div><div class="sidebar-sub">Korapay connected</div></div>
     </div>

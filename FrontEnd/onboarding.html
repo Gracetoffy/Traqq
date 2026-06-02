@@ -95,8 +95,10 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .dot.active{width:22px;background:var(--accent)}
 .next-btn{width:54px;height:54px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:22px;transition:all 0.2s var(--ease);box-shadow:0 4px 22px var(--accent-glow)}
 .next-btn:hover{transform:scale(1.08);box-shadow:0 8px 32px var(--accent-glow)}
-.next-btn:active{transform:scale(0.95)}
-
+.next-btn:active{transform:scale(0.95)}.prev-btn{width:54px;height:54px;border-radius:50%;background:var(--surface2);color:var(--text3);display:flex;align-items:center;justify-content:center;font-size:22px;transition:all 0.2s var(--ease);border:0.5px solid var(--border)}
+.prev-btn:hover{transform:scale(1.08);box-shadow:0 8px 24px rgba(0,0,0,0.08)}
+.prev-btn:active{transform:scale(0.95)}
+.prev-btn:disabled{opacity:0.45;cursor:not-allowed;box-shadow:none;transform:none}
 /* CONNECT SCREEN */
 .connect-screen{display:flex;flex-direction:column;height:100%}
 .connect-body{flex:1;display:flex;flex-direction:column;justify-content:center;padding:24px 28px;overflow-y:auto}
@@ -194,7 +196,8 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
         <div class="feature-desc">Generate a single Kora payment link and share it anywhere,Instagram, WhatsApp, Telegram.<span style="color: var(--accent); font-weight: 300;"> One link handles all </span> of them automatically.</div>
       </div>
       <div class="bottom-area">
-        <div class="dots"><div class="dot active"></div><div class="dot"></div><div class="dot"></div></div>
+        <button class="prev-btn" disabled><i class="ti ti-arrow-left"></i></button>
+          <div class="dots"><div class="dot active"></div><div class="dot"></div><div class="dot"></div></div>
         <button class="next-btn" onclick="nextScreen()"><i class="ti ti-arrow-right"></i></button>
       </div>
     </div>
@@ -227,6 +230,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
         <div class="feature-desc">TRAQQ silently detects which platform each buyer clicked from — no guessing, no manual tagging, no extra steps for your buyers.</div>
       </div>
       <div class="bottom-area">
+        <button class="prev-btn" onclick="prevScreen()"><i class="ti ti-arrow-left"></i></button>
         <div class="dots"><div class="dot"></div><div class="dot active"></div><div class="dot"></div></div>
         <button class="next-btn" onclick="nextScreen()"><i class="ti ti-arrow-right"></i></button>
       </div>
@@ -259,6 +263,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
         <div class="feature-desc">Paste your next post caption. TRAQQ tells you the best platform and time to post — based on your own real sales data, not generic advice.</div>
       </div>
       <div class="bottom-area">
+        <button class="prev-btn" onclick="prevScreen()"><i class="ti ti-arrow-left"></i></button>
         <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot active"></div></div>
         <button class="next-btn" onclick="nextScreen()"><i class="ti ti-arrow-right"></i></button>
       </div>
@@ -339,6 +344,10 @@ function advanceToScreen(to){
 
 function nextScreen(){
   if(currentScreen >= 1 && currentScreen <= 3) advanceToScreen(currentScreen+1);
+}
+
+function prevScreen(){
+  if(currentScreen >= 2 && currentScreen <= 4) advanceToScreen(currentScreen-1);
 }
 
 function goToConnect(){ advanceToScreen(4) }
